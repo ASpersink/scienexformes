@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemical Reactions | For Madona English School's Science Exhibition</title>
+    <style>
+        /* Hide the video element while keeping it functional */
+        #qr-video {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="result">Scan a QR Code to see the result</div>
+    <br>
+    <div id="jar">Solution</div>
+    <br>
+    <div id="reaction">Reaction</div>
+
+    <!-- Video element is hidden but still active -->
+    <video id="qr-video"></video>
+
+    <!-- Include the jsQR library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+    <script>
+        let chemical = 'none';
+        const videoElement = document.getElementById("qr-video");
+        const resultElement = document.getElementById("result");
+
+        // Start camera to scan QR code
+        function startScanner() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                    .then((stream) => {
+                        videoElement.srcObject = stream;
+                        videoElement.setAttribute("playsinline", true); // for iOS
+                        videoElement.play();
+                        
+                        // Start scanning once video metadata is loaded
+                        videoElement.onloadedmetadata = () => {
+                            // Start scanning immediately once the video is ready
+                            requestAnimationFrame(scanQRCode);
+                        };
+                    })
+                    .catch((err) => {
+                        console.error("Error accessing camera: ", err);
+                    });
+            }
+        }
+
+        // Scan the QR Code
+        function scanQRCode() {
+            // Ensure the video dimensions are updated
+            if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
+                // If video dimensions are not available yet, keep retrying
+                requestAnimationFrame(scanQRCode);
+                return;
+            }
+
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            // Draw the current video frame onto the canvas
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const decodedQR = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (decodedQR) {
+                if (decodedQR.data == '1') {
+                    chemical = 'HCl';
+                }
+
+                if (decodedQR.data == '2') {
+                    chemical = 'NaOH';
+                }
+
+                if (decodedQR.data == '3') {
+                    chemical = 'CuSO4';
+                }
+
+                if (decodedQR.data == '4') {
+                    chemical = 'NH3';
+                }
+
+                if (decodedQR.data == '5') {
+                    chemical = 'H2SO4';
+                }
+
+                if (decodedQR.data == '6') {
+                    chemical = 'KI';
+                }
+
+                resultElement.textContent = `Chemical: ${chemical}`;
+            }
+
+            // Keep scanning in a continuous loop
+            requestAnimationFrame(scanQRCode);
+        }
+
+        // Start the QR Code Scanner when the page is ready
+        window.onload = startScanner;
+    </script>
+
+    <script>
+        let solution = [];
+        function addChemical() {
+            if (chemical == 'HCl' && !solution.includes('HCl')) {
+                solution.push('HCl');
+                chemical = 'none';
+            }
+            if (chemical == 'NaOH' && !solution.includes('NaOH')) {
+                solution.push('NaOH');
+                chemical = 'none';
+            }
+            if (chemical == 'CuSO4' && !solution.includes('CuSO4')) {
+                solution.push('CuSO4');
+                chemical = 'none';
+            }
+            if (chemical == 'NH3' && !solution.includes('NH3')) {
+                solution.push('NH3');
+                chemical = 'none';
+            }
+            if (chemical == 'H2SO4' && !solution.includes('H2SO4')) {
+                solution.push('H2SO4');
+                chemical = 'none';
+            }
+            if (chemical == 'KI' && !solution.includes('KI')) {
+                solution.push('KI');
+                chemical = 'none';
+            }
+
+            if (solution.length==2) {
+                makeSolution();
+            }
+
+            requestAnimationFrame(addChemical);
+        }
+
+        function makeSolution () {
+            document.getElementById('jar').innerText = solution[0] + ', ' + solution[1];
+            let reaction = document.getElementById('reaction');
+            
+            if (solution.includes('HCl') && solution.includes('NaOH')) {
+                reaction.innerText = 'The reaction is between ' + 'Hydrochloric Acid (HCl) and Sodium Hydroxide (NaOH). ' + 'It will form ' + 'Sodium Chloride (NaCl) and Water (H2O). ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'neutral.'
+            }
+            if (solution.includes('HCl') && solution.includes('CuSO4')) {
+                reaction.innerText = 'The reaction is between ' + 'Hydrochloric Acid (HCl) and Copper Sulphate (CuSO4). ' + 'It will form ' + 'Copper Chloride (CuCl2) and Sulphuric Acid (H2SO4). ' + 'The solution will be ' + 'blue-green ' + 'and the chemical nature of the solution will be ' + 'acidic.'
+            }
+            if (solution.includes('HCl') && solution.includes('NH3')) {
+                reaction.innerText = 'The reaction is between ' + 'Hydrochloric Acid (HCl) and Ammonia(NH3). ' + 'It will form ' + 'Ammonium Chloride (NH4Cl). ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'slightly acidic.'
+            }
+            if (solution.includes('HCl') && solution.includes('H2SO4')) {
+                reaction.innerText = 'The reaction is between ' + 'Hydrochloric Acid (HCl) and Sulphuric Acid. ' + 'Hydrochloric acid and sulfuric acid do not react unless there is a higher temperature or more specific conditions. ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'acidic.'
+            }
+            if (solution.includes('HCl') && solution.includes('KI')) {
+                reaction.innerText = 'The reaction is between ' + 'Hydrochloric Acid (HCl) and Potassium iodide (KI). ' + 'It will form ' + 'Potassium Chloride (2KCl) and iodide Gas (l2). ' + 'The solution will be ' + 'yellow-brown ' + 'and the chemical nature of the solution will be ' + 'strong acid.'
+            }
+            if (solution.includes('NaOH') && solution.includes('CuSO4')) {
+                reaction.innerText = 'The reaction is between ' + 'Sodium Hydroxide (NaOH) and Copper Sulphate (CuSO4). ' + 'It will form ' + 'Copper(II) Hydroxide (Cu[OH]2) and Sodium Sulphate (Na2SO4). ' + 'The solution will be ' + 'blue ' + 'and the chemical nature of the solution will be ' + 'basic.'
+            }
+            if (solution.includes('NaOH') && solution.includes('NH3')) {
+                reaction.innerText = 'The reaction is between ' + 'Sodium Hydroxide (NaOH) and Ammonia (NH3). ' + 'It will form ' + 'Ammonium Hydroxide and Sodium Hydroxide (NH4OH). ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'basic.'
+            }
+            if (solution.includes('NaOH') && solution.includes('H2SO4')) {
+                reaction.innerText = 'The reaction is between ' + 'Sodium Hydroxide (NaOH) and Sulphuric Acid. ' + 'It will form ' + 'Sodium Sulphate (Na2SO4) and Water (H2O). ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'neutral.'
+            }
+            if (solution.includes('NaOH') && solution.includes('KI')) {
+                reaction.innerText = 'The reaction is between ' + 'Sodium Hydroxide (NaOH) and Potassium iodide. ' + 'It will form ' + 'Sodium iodide (Nal) and Potassium Hydroxide (KOH). ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'basic.'
+            }
+            if (solution.includes('CuSO4') && solution.includes('NH3')) {
+                reaction.innerText = 'The reaction is between ' + 'Copper Sulphate (CuSO4) and Ammonia (NH3). ' + 'It will form ' + ' form a deep blue complex of copper-ammonia ([Cu(NH₃)₄]²⁺ + SO₄²⁻). ' + 'The solution will be ' + 'blue ' + 'and the chemical nature of the solution will be ' + 'basic.'
+            }
+            if (solution.includes('CuSO4') && solution.includes('H2SO4')) {
+                reaction.innerText = 'The reaction is between ' + 'Copper Sulphate (CuSO4) and Sulphuric Acid (H2SO4). ' + 'Copper sulfate and sulfuric acid do not react unless elevated temperatures are used. ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'acidic.'
+            }
+            if (solution.includes('CuSO4') && solution.includes('KI')) {
+                reaction.innerText = 'The reaction is between ' + 'Copper Sulphate (CuSO4) and Potassium iodide (KI). ' + 'It will form Copper(I) Iodide (Cul), Potassium Sulfate (K2SO4), and iodide Gas (I2) ' + 'and the chemical nature of the solution will be acidic.'
+            }
+            if (solution.includes('NH3') && solution.includes('H2SO4')) {
+                reaction.innerText = 'The reaction is between ' + 'Ammonia (NH3) and Sulphuric Acid (H2SO4). ' + 'It will form ' + 'Ammonium Sulphate ([NH4]2SO4). ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'slightly acidic.'
+            }
+            if (solution.includes('NH3') && solution.includes('KI')) {
+                reaction.innerText = 'The reaction is between ' + 'Ammonia (NH3) and Potassium Iodide (KI). ' + 'They do not react under normal conditions ' + 'The solution will be ' + 'colourless ' + 'and the chemical nature of the solution will be ' + 'neutral.'
+            }
+            if (solution.includes('H2SO4') && solution.includes('KI')) {
+                reaction.innerText = 'The reaction is between ' + 'Sulphuric Acid (H2SO4) and Potassium Iodide (KI). ' + 'It will form ' + 'iodide, Sulphur Dioxide and Water (I₂ + SO₂ + H₂O + 2KCl). ' + 'The solution will be ' + 'yellow-brown ' + 'and the chemical nature of the solution will be ' + 'acidic'
+            }
+        }
+        requestAnimationFrame(addChemical);
+    </script>
+</body>
+</html>
